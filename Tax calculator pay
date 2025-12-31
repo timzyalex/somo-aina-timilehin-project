@@ -1,0 +1,95 @@
+# US Federal Income Tax Calculator for 2009 Tax Rates
+
+# Tax brackets for 2009 (as given in the table)
+brackets = {
+    0: [  # Single
+        (0, 8350, 0.10),
+        (8351, 33950, 0.15),
+        (33951, 82250, 0.25),
+        (82251, 171550, 0.28),
+        (171551, 372950, 0.33),
+        (372951, float('inf'), 0.35)
+    ],
+    1: [  # Married Filing Jointly or Qualifying Widow(er)
+        (0, 16700, 0.10),
+        (16701, 67900, 0.15),
+        (67901, 137050, 0.25),
+        (137051, 208850, 0.28),
+        (208851, 372950, 0.33),
+        (372951, float('inf'), 0.35)
+    ],
+    2: [  # Married Filing Separately
+        (0, 8350, 0.10),
+        (8351, 33950, 0.15),
+        (33951, 68525, 0.25),
+        (68526, 104425, 0.28),
+        (104426, 186475, 0.33),
+        (186476, float('inf'), 0.35)
+    ],
+    3: [  # Head of Household
+        (0, 11950, 0.10),
+        (11951, 45500, 0.15),
+        (45501, 117450, 0.25),
+        (117451, 190200, 0.28),
+        (190201, 372950, 0.33),
+        (372951, float('inf'), 0.35)
+    ]
+}
+
+filing_status_names = {
+    0: "Single",
+    1: "Married Filing Jointly or Qualifying Widow(er)",
+    2: "Married Filing Separately",
+    3: "Head of Household"
+}
+
+def calculate_tax(income, status):
+    if status not in brackets:
+        return None
+    
+    tax = 0.0
+    remaining_income = income
+    
+    for lower, upper, rate in brackets[status]:
+        if remaining_income <= 0:
+            break
+        taxable_in_bracket = min(remaining_income, upper - lower)
+        tax += taxable_in_bracket * rate
+        remaining_income -= taxable_in_bracket
+    
+    return tax
+
+# Main program
+print("=== 2009 US Federal Income Tax Calculator ===")
+print()
+
+while True:
+    try:
+        status_input = int(input("Enter filing status (0=Single, 1=Married Jointly/QW, 2=Married Separately, 3=Head of Household): "))
+        if status_input not in [0, 1, 2, 3]:
+            print("Invalid choice. Please enter 0, 1, 2, or 3.")
+            continue
+    except ValueError:
+        print("Please enter a number.")
+        continue
+    
+    try:
+        income = float(input("Enter your taxable income: $"))
+        if income < 0:
+            print("Income cannot be negative.")
+            continue
+    except ValueError:
+        print("Please enter a valid number.")
+        continue
+    
+    break
+
+print()
+print(f"Filing Status: {filing_status_names[status_input]}")
+print(f"Taxable Income: ${income:,.2f}")
+
+tax_amount = calculate_tax(income, status_input)
+
+print(f"Federal Income Tax: ${tax_amount:,.2f}")
+print()
+print("Thank you for using the calculator!")
